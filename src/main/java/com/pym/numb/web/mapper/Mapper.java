@@ -2,6 +2,7 @@ package com.pym.numb.web.mapper;
 
 import com.pym.numb.context.lifecycle.NumbLifecycle;
 import com.pym.numb.util.ObjUtils;
+import com.pym.numb.util.StrUtils;
 import com.pym.numb.web.annotation.ReqParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,15 +57,51 @@ public class Mapper implements NumbLifecycle{
                 if (cls.equals(String.class)) {
                     pl.add(pv);
                 } else if (cls.equals(Integer.class) || cls.equals(int.class)) {
-                    pl.add(Integer.valueOf(pv));
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Integer.valueOf(pv));
+                    }
                 } else if (cls.equals(Long.class) || cls.equals(long.class)) {
-                    pl.add(Long.parseLong(pv));
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Long.parseLong(pv));
+                    }
                 } else if (cls.equals(Float.class) || cls.equals(float.class)) {
-                    pl.add(Float.parseFloat(pv));
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Float.parseFloat(pv));
+                    }
+
                 } else if (cls.equals(Double.class) || cls.equals(double.class)) {
-                    pl.add(Double.parseDouble(pv));
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Double.parseDouble(pv));
+                    }
                 } else if (cls.equals(Boolean.class) || cls.equals(boolean.class)) {
-                    pl.add(Boolean.parseBoolean(pv));
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Boolean.parseBoolean(pv));
+                    }
+
+                } else if (cls.equals(Byte.class) || cls.equals(byte.class)) {
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Byte.parseByte(pv));
+                    }
+
+                } else if (cls.equals(Short.class) || cls.equals(short.class)) {
+                    if(StrUtils.isEmpty(pv)) {
+                        pl.add(null);
+                    } else {
+                        pl.add(Short.parseShort(pv));
+                    }
+
                 } else {
                     Map<String, String> map = new HashMap<String, String>();
                     request.getParameterMap().forEach((key,value) -> {

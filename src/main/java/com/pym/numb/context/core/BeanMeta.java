@@ -171,6 +171,9 @@ public class BeanMeta implements NumbLifecycle{
         return this.allSupAndInf.contains(cls);
     }
     public boolean isThisType(Type type) {
+        if (type == this.subCls) {
+            return true;
+        }
         return this.genericIntefaces.contains(type)
                 || this.genericSupperClass.contains(type);
     }
@@ -185,9 +188,11 @@ public class BeanMeta implements NumbLifecycle{
     }
 
     public boolean instanceSubObj(NumbContainer container) {
+        //修复普通对象注入不成功的bug，普通对象没有泛型父类
         if (this.subObj != null) {
             return true;
         }
+
         if (container == null) {
             throw new RuntimeException("请传入容器");
         }
@@ -225,6 +230,7 @@ public class BeanMeta implements NumbLifecycle{
                     List<BeanMeta> bmsByCls = container.getBeanMeta(cls);
                     boolean ok = false;
                     for (BeanMeta beanMeta : bmsByCls) {
+
                         if (beanMeta.isThisType(field.getGenericType())) {
                             try {
                                 field.set(obj,cls.cast(beanMeta.getSubObj()));

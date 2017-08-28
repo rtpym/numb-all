@@ -87,15 +87,27 @@ public class ObjUtils {
                         try {
                             String pv_str = map.get(name);
                             Class p_cls = method.getParameterTypes()[0];
-                            Object pv_obj =  pv_str;;
-                            if (p_cls.equals(Integer.class)) {
+                            Object pv_obj =  pv_str;
+                            if (StrUtils.isEmpty(pv_str) || !p_cls.equals(String.class)) {
+                                method.invoke(obj,p_cls.cast(null));
+                                return;
+                            }
+                            if (p_cls.equals(Integer.class) || p_cls.equals(int.class)) {
                                 pv_obj = Integer.parseInt(pv_str);
-                            } else if (p_cls.equals(Long.class)) {
+                            } else if (p_cls.equals(Long.class) || p_cls.equals(long.class)) {
                                 pv_obj = Long.parseLong(pv_str);
-                            } else if (p_cls.equals(Double.class)) {
+                            } else if (p_cls.equals(Double.class) || p_cls.equals(double.class)) {
                                 pv_obj = Double.parseDouble(pv_str);
-                            } else if (p_cls.equals(Float.class)) {
+                            } else if (p_cls.equals(Float.class) || p_cls.equals(float.class)) {
                                 pv_obj = Float.parseFloat(pv_str);
+                            } else if (p_cls.equals(Boolean.class) || p_cls.equals(boolean.class)) {
+                                pv_obj = Boolean.parseBoolean(pv_str);
+                            } else if (p_cls.equals(Byte.class) || p_cls.equals(byte.class)) {
+                                pv_obj = Byte.parseByte(pv_str);
+                            }  else if (p_cls.equals(Short.class) || p_cls.equals(short.class)) {
+                                pv_obj = Short.parseShort(pv_str);
+                            } else if (p_cls.equals(Character.class) || p_cls.equals(char.class)) {
+                               //不想支持。。。。。
                             }
                             method.invoke(obj,p_cls.cast(pv_obj));
                         } catch (Exception e) {

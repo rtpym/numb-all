@@ -69,7 +69,7 @@ public class BeanParseUtils {
                 //1.将类名首字母小写作为name查找
                 Class<?> pCls = parameter.getType();
                 BeanMeta bm = container.getBeanMeta(StrUtils.lowerFirstChar(pCls.getSimpleName()));
-                if (bm.isThisType(pCls) && bm.isThisType(parameter.getParameterizedType())) {
+                if (bm != null && bm.isThisType(pCls) && bm.isThisType(parameter.getParameterizedType())) {
                     params.add(bm.getSubObj());
                 } else {
                     List<BeanMeta> bmsByCls = container.getBeanMeta(pCls);
