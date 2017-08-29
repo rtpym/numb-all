@@ -60,6 +60,7 @@ public final class NumbCentralServlet extends HttpServlet {
     }
 
     private void doAction(HttpServletRequest request, HttpServletResponse response, Mapper mapper) throws Exception {
+        //拦截器执行对应的控制层方法前拦截
         for (NumbInterceptor nIcp : interceptors) {
             if (!nIcp.before(request,response,mapper)) {
                 return;
@@ -70,10 +71,16 @@ public final class NumbCentralServlet extends HttpServlet {
         if (StrUtils.isEmpty(encoding)) {
             encoding = "UTF-8";
         }
-        Object result = "";
+        Object result = null;
+        String errorPath = null;
+        JsonRes jr = mapper.getControllerMethod().getAnnotation(JsonRes.class);
         try {
             result = mapper.invork(request,response);
-            if (mapper.getControllerMethod().getAnnotation(JsonRes.class) != null) {
+            //正常执行后拦截
+            for (NumbInterceptor nIcp : interceptors) {
+                nIcp.after(request,response,mapper);
+            }
+            if (jr != null) {
                 response.setContentType("application/json; charset=" + encoding);
                 OutputStream out = null;
                 try {
@@ -91,22 +98,26 @@ public final class NumbCentralServlet extends HttpServlet {
                         }
                     }
                 }
-                return;
             }
         } catch (Exception e) {
+            //如果没有异常处理，直接把异常抛出
             if (exceptionHandler == null) {
                 throw e;
             }
-            String errorPath = exceptionHandler.handler(request,response,e);
-            if (!StrUtils.isEmpty(errorPath)) {
-                viewHandler.handler(result.toString(),request,response);
+            //通过异常处理处理异常 得到指定错误页面路径 如果返回null则不会转发或重定向
+            errorPath = exceptionHandler.handler(request,response,e);
+            if (errorPath != null) {
+                result = errorPath;
             }
-            return;
         }
+        //操作完成后拦截
         for (NumbInterceptor nIcp : interceptors) {
             nIcp.complete(request,response,mapper);
         }
-        //处理视图
-        viewHandler.handler(result.toString(),request,response);
+        //处理视图 没JsonRes 和 或者errorPath!=null的
+        if (jr == null || errorPath != null) {
+             viewHandler.handler(result.toString(),request,response);
+        }
+       
     }
 }
